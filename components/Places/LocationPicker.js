@@ -11,10 +11,10 @@ import {
   useIsFocused,
 } from '@react-navigation/native';
 
-import { Colors } from '../../constants/colors';
-import OutlinedButton from '../UI/OutlinedButton';
-import { getMapPreview } from '../../util/location';
-
+import { Colors } from '@/constants/colors';
+import OutlinedButton from '@/components/UI/OutlinedButton';
+import { getAddress, getMapPreview } from '@/util/location';
+  
 function LocationPicker({ onPickLocation }) {
   const [pickedLocation, setPickedLocation] = useState();
   const isFocused = useIsFocused();
@@ -36,7 +36,17 @@ function LocationPicker({ onPickLocation }) {
   
   // * This 'useEffect' sends the 'pickedLocation' to 'PlaceForm.js'
   useEffect(() => {
-    onPickLocation(pickedLocation);
+    async function handleLocation() {
+      if (pickedLocation) {
+        const address = await getAddress(
+          pickedLocation.lat,
+          pickedLocation.lng
+        );
+        onPickLocation({ ...pickedLocation, address: address });
+      }
+    }
+
+    handleLocation();
   }, [pickedLocation, onPickLocation]);
 
   async function verifyPermissions() {

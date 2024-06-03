@@ -5,8 +5,9 @@ import { Colors } from '@/constants/colors';
 import ImagePicker from '@/components/Places/ImagePicker';
 import LocationPicker from '@/components/Places/LocationPicker';
 import Button from '@/components/UI/Button';
+import { Place } from '@/models/place';
 
-function PlaceForm() {
+function PlaceForm({ onCreatePlace }) {
   const [enteredTitle, setEnteredTitle] = useState('');
   const [selectedImage, setSelectedImage] = useState();
   const [pickedLocation, setPickedLocation] = useState();
@@ -24,24 +25,29 @@ function PlaceForm() {
   }, []);
 
   function savePlaceHandler() {
-    console.log("enteredTitle", enteredTitle);
-    console.log( "selectedImage" ,selectedImage);
-    console.log("pickedLocation", pickedLocation);
+    const placeData = new Place(
+      enteredTitle,
+      selectedImage,
+      pickLocationHandler
+    );
+    onCreatePlace(placeData);
   }
 
   return (
     <ScrollView style={ styles.form }>
-      <View>
-        <Text style={ styles.label }>Title</Text>
-        <TextInput
-          style={ styles.input }
-          onChangeText={ changeTitleHandler }
-          value={ enteredTitle }
-        />
+      <View style={ styles.container }>
+        <View>
+          <Text style={ styles.label }>Title</Text>
+          <TextInput
+            style={ styles.input }
+            onChangeText={ changeTitleHandler }
+            value={ enteredTitle }
+          />
+        </View>
+        <ImagePicker onTakeImage={ takeImageHandler }/>
+        <LocationPicker onPickLocation={ pickLocationHandler }/>
+        <Button onPress={ savePlaceHandler }>Add Place</Button>
       </View>
-      <ImagePicker onTakeImage={ takeImageHandler }/>
-      <LocationPicker onPickLocation={ pickLocationHandler }/>
-      <Button onPress={ savePlaceHandler }>Add Place</Button>
     </ScrollView>
   );
 }
@@ -49,6 +55,9 @@ function PlaceForm() {
 export default PlaceForm;
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 50,
+  },
   form: {
     flex: 1,
     padding: 24,

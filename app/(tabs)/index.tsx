@@ -1,16 +1,38 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
 
 import AllPlaces from '@/screens/AllPlaces';
 import AddPlace from '@/screens/AddPlace';
 import IconButton from '@/components/UI/IconButton';
 import { Colors } from '@/constants/colors';
 import Map from '@/screens/Map';
+import { init } from '@/util/database';
+
+// * Keep the splash screen visible while app checks login status
+// SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [dbInitialized, setDbInitialized] = useState(false);
+
+  // * useEffect to initialize the database upon starting the app
+  useEffect(() => {
+    init().then(() => {
+      setDbInitialized(true);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
+
+  // * Removes loading screen when datebase has been initialized
+  if (dbInitialized) {
+    SplashScreen.hideAsync();    
+  }
+
   return (
     <>
       <StatusBar style="dark" />
