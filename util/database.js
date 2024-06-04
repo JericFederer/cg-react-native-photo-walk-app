@@ -1,73 +1,63 @@
 import * as SQLite from 'expo-sqlite';
 
-// TODO TEST - START
-// const db = await SQLite.openDatabaseAsync('places');
+export async function init() {
+  const db = await SQLite.openDatabaseAsync('places');
 
-// export function init() {
-//   const result = db.execAsync(
-//     `CREATE TABLE IF NOT EXISTS places (
-//       id INTEGER PRIMARY KEY NOT NULL,
-//       title TEXT NOT NULL,
-//       imageUri TEXT NOT NULL,
-//       address TEXT NOT NULL,
-//       lat REAL NOT NULL,
-//       lng REAL NOT NULL)`
-//   )
+  const result = db.execAsync(
+    `CREATE TABLE IF NOT EXISTS places (
+      id INTEGER PRIMARY KEY NOT NULL,
+      title TEXT NOT NULL,
+      imageUri TEXT NOT NULL,
+      address TEXT NOT NULL,
+      lat REAL NOT NULL,
+      lng REAL NOT NULL)`,
+  )
 
-//   console.log(result)
-//   return result;
-// }
-// TODO TEST - END
-
-const database = SQLite.openDatabaseSync('places.db');
-
-export function init() {
-  const promise = new Promise((resolve, reject) => {
-    database.transaction((tx) => {
-      tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS places (
-        id INTEGER PRIMARY KEY NOT NULL,
-        title TEXT NOT NULL,
-        imageUri TEXT NOT NULL,
-        address TEXT NOT NULL,
-        lat REAL NOT NULL,
-        lng REAL NOT NULL)`,
-        [], // !  
-        () => {
-          resolve();
-        },
-        (_, error) => {
-          reject(error);
-        }
-      )
-    });
-  });
-
-  return promise;
+  return result;
 }
 
-export function insertPlace(place) {
-  const promise = new Promise((resolve, reject) => {
-    database.transaction((tx) => {
-      tx.executeSql(
-        `INSERT INTO places (title, imageUri, address, lat, lng) VALUES (?, ?, ?, ?, ?)`,
-        [
-          place.title,
-          place.imageUri,
-          place.address,
-          place.location.lat,
-          place.location.lng
-        ],
-        (_, result) => {
-          console.log(result);
-          resolve(result);
-        },
-        (_, error) => {
-          reject(error); 
-        }
-      )
-    });
-  });
+export async function insertPlace(place) {
+  const db = await SQLite.openDatabaseAsync('places');
 
-  return promise;
+  const place_test = {
+    title: "test_title",
+    imageUri: "test_imageUri",
+    address: "test_address",
+    location: {
+      lat: 35.73038682521549,
+      lng: 139.71048440784216
+    }
+  }
+
+  const result = await db.runAsync(
+    `INSERT INTO places (title, imageUri, address, lat, lng) VALUES (?, ?, ?, ?, ?)`,
+    place.title,
+    place_test.imageUri,
+    place_test.address,
+    place_test.location.lat,
+    place_test.location.lng,
+  );
+
+  return result;
+}
+
+export async function fetchPlaces() {
+  const db = await SQLite.openDatabaseAsync('places');
+
+  const result = await db.getAllAsync(
+    `SELECT * FROM places`,
+  )
+
+  return result;
+}
+
+export async function fetchPlaceDetails(id) {
+  const db = await SQLite.openDatabaseAsync('places');
+
+  const result = await db.getFirstAsync(
+    `SELECT * FROM places where id = ?`,
+    id
+  )
+
+  return result;
 }

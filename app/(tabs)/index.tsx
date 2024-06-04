@@ -10,9 +10,10 @@ import IconButton from '@/components/UI/IconButton';
 import { Colors } from '@/constants/colors';
 import Map from '@/screens/Map';
 import { init } from '@/util/database';
+import PlaceDetails from '@/screens/PlaceDetails';
 
 // * Keep the splash screen visible while app checks login status
-// SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +60,7 @@ export default function App() {
               ),
             })}
           />
+
           <Stack.Screen
             name="AddPlace"
             component={ AddPlace }
@@ -66,6 +68,15 @@ export default function App() {
               title: 'Add a new Place',
             }}
           />
+
+          <Stack.Screen
+            name="PlaceDetails"
+            component={ PlaceDetails }
+            options={{
+              title: 'Loading Place...',
+            }}
+          />
+          
           <Stack.Screen name="Map" component={ Map } />
         </Stack.Navigator>
       </NavigationContainer>
